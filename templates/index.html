@@ -1,0 +1,610 @@
+{% extends "layout.html" %}
+
+{% block title %}The Ultimate Video Downloader - AnyviDow{% endblock %}
+
+{% block content %}
+<section class="text-center py-5">
+    <h1 class="display-4 fw-bold">One Link, Any Video</h1>
+    <p class="lead text-body-secondary">Paste any video or playlist link below to begin.</p>
+    <form id="videoForm" class="row justify-content-center mt-4">
+        <div class="col-lg-7 col-md-9">
+            <div class="input-group">
+                <input type="url" id="videoURL" class="form-control form-control-lg"
+                    placeholder="Enter video or playlist URL..." required>
+                <button class="btn btn-primary btn-lg" type="submit" id="fetchBtn">
+                    <span id="fetchBtnSpinner" class="spinner-border spinner-border-sm d-none"></span>
+                    <span id="fetchBtnText">Fetch</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</section>
+
+<!-- Results Section -->
+<section id="resultsSection" class="d-none">
+    <!-- Loading Skeleton -->
+    <div id="loadingSkeleton">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="card glass-card placeholder-glow">
+                    <div class="placeholder loading-skeleton-thumbnail"></div>
+                    <div class="card-body"><span class="placeholder col-8"></span><span
+                            class="placeholder col-5 mt-2"></span></div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="card glass-card placeholder-glow">
+                    <div class="card-body"><span class="placeholder col-12 loading-skeleton-content"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Wrapper (shown after loading) -->
+    <div id="contentWrapper" class="d-none">
+
+        <!-- Single Video Result View -->
+        <div id="singleVideoResult" class="d-none">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="card glass-card h-100">
+                        <div class="thumbnail-container">
+                            <img id="videoThumbnail" class="card-img-top" alt="Video Thumbnail">
+                            <div class="play-icon-overlay"><i class="bi bi-play-circle-fill"></i></div>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title" id="videoTitle"></h5>
+                            <div class="d-flex justify-content-between text-body-secondary small mb-3 flex-wrap gap-2">
+                                <span id="videoPlatform"></span>
+                                <span><i class="bi bi-calendar-event"></i> <span id="videoDate"></span></span>
+                                <span><i class="bi bi-clock-fill"></i> <span id="videoDuration"></span></span>
+                                <span><i class="bi bi-hand-thumbs-up-fill"></i> <span id="videoLikes"></span></span>
+                            </div>
+                            <div class="mt-auto d-flex gap-2">
+                                <a id="openVideo" href="#" target="_blank"
+                                    class="btn btn-sm btn-outline-primary flex-fill"><i
+                                        class="bi bi-box-arrow-up-right me-1"></i> View Original</a>
+                                <a id="openAuthor" href="#" target="_blank"
+                                    class="btn btn-sm btn-outline-secondary flex-fill"><i
+                                        class="bi bi-person-video me-1"></i> Author</a>
+                                <button id="shareLink" class="btn btn-sm btn-outline-success flex-fill"><i
+                                        class="bi bi-share-fill me-1"></i> Share</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card glass-card h-100">
+                        <div class="card-header">
+                            <ul class="nav nav-tabs card-header-tabs" id="formatTabs">
+                                <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab"
+                                        data-bs-target="#video-tab-pane">Video</button></li>
+                                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
+                                        data-bs-target="#audio-tab-pane">Audio</button></li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content" id="formatTabsContent">
+                                <div class="tab-pane fade show active" id="video-tab-pane">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Resolution</th>
+                                                    <th>Size</th>
+                                                    <th>Type</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="videoFormats"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="audio-tab-pane">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Quality</th>
+                                                    <th>Size</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="audioFormats"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Playlist Result View -->
+        <div id="playlistResult" class="d-none card glass-card mt-4">
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <img id="playlistThumbnail" class="img-fluid rounded mb-3" alt="Playlist Thumbnail">
+                        <h3 id="playlistTitle"></h3>
+                        <p class="text-body-secondary" id="playlistMeta"></p>
+                        <div class="d-flex gap-2 mb-3">
+                            <a id="openPlaylist" href="#" target="_blank" class="btn btn-outline-primary flex-fill"><i
+                                    class="bi bi-box-arrow-up-right me-1"></i> View Playlist</a>
+                            <a id="openPlaylistAuthor" href="#" target="_blank"
+                                class="btn btn-outline-secondary flex-fill"><i class="bi bi-person-video me-1"></i> View
+                                Author</a>
+                        </div>
+                        <div class="card glass-card playlist-stats">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    <i class="bi bi-gear-fill me-2 text-primary"></i>
+                                    Download Options
+                                </h5>
+                                <div class="input-group mb-3">
+                                    <label class="input-group-text" for="qualitySelect"><i
+                                            class="bi bi-camera-reels-fill"></i></label>
+                                    <select class="form-select" id="qualitySelect">
+                                        <option value="1080" selected>Max Quality: HD (1080p)</option>
+                                        <option value="720">Max Quality: HD (720p)</option>
+                                        <option value="480">Max Quality: SD (480p)</option>
+                                        <option value="360">Max Quality: SD (360p)</option>
+                                    </select>
+                                </div>
+                                <div class="d-grid gap-2 playlist-controls" id="playlistDownloadActions">
+                                    <button class="btn btn-success btn-lg" id="downloadAllBtn">
+                                        <i class="bi bi-file-earmark-zip-fill me-2"></i> 
+                                        Download All as ZIP
+                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-outline-primary" id="downloadTop5Btn">
+                                            <i class="bi bi-arrow-up-circle me-1"></i>First 5
+                                        </button>
+                                        <button class="btn btn-outline-primary" id="downloadBottom5Btn">
+                                            <i class="bi bi-arrow-down-circle me-1"></i>Last 5
+                                        </button>
+                                    </div>
+                                    <div class="input-group custom-range-inputs">
+                                        <input type="number" id="customRangeStart" class="form-control"
+                                            placeholder="Start #" min="1">
+                                        <input type="number" id="customRangeEnd"
+                                            class="form-control" placeholder="End #" min="1">
+                                        <button class="btn btn-primary" id="downloadCustomRangeBtn">
+                                            <i class="bi bi-download me-1"></i>Go
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="table-responsive playlist-table-container">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Preview</th>
+                                        <th>Title</th>
+                                        <th>Duration</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="playlistVideos"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Video Player Modal -->
+<div class="modal fade" id="videoPlayerModal" tabindex="-1" aria-labelledby="videoPlayerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <div class="ratio ratio-16x9"><iframe id="videoPlayerIframe" allowfullscreen
+                        allow="autoplay; encrypted-media"></iframe></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Audio Only Progress Modal -->
+<div class="modal fade" id="audioProgressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="audioProgressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-card border-0 shadow-lg overflow-hidden">
+            <div class="modal-header border-0 text-white position-relative py-4 audio-modal-header">
+                <h5 class="modal-title fw-bold d-flex align-items-center mb-0" id="audioProgressModalLabel">
+                    <div class="me-3 p-2 rounded-circle modal-icon-wrapper">
+                        <i class="bi bi-music-note-beamed"></i>
+                    </div>
+                    Audio Download Progress
+                </h5>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row align-items-center mb-4">
+                    <div class="col-12 col-md-4 text-center mb-3 mb-md-0">
+                        <div class="position-relative d-inline-block">
+                            <svg width="120" height="120" class="audio-progress-ring" viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="50" stroke="var(--bs-border-color)" stroke-width="6"
+                                    fill="transparent" opacity="0.1" />
+                                <circle id="audioProgressRing" cx="60" cy="60" r="50" stroke="url(#audioGradient)"
+                                    stroke-width="6" fill="transparent" stroke-dasharray="314" stroke-dashoffset="314"
+                                    transform="rotate(-90 60 60)" class="audio-progress-stroke"
+                                    style="transition: stroke-dashoffset 0.3s ease;" />
+                                <defs>
+                                    <linearGradient id="audioGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:var(--secondary-color);stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:var(--primary-color);stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <div id="audioProgressPercent" class="fw-bold text-center audio-progress-percent">0%</div>
+                            </div>
+                        </div>
+                        <div id="audioProgressPhase" class="text-muted mt-2 fw-medium d-none d-md-block">Initializing...</div>
+                        <div id="audioProgressPhaseMobile" class="text-muted mt-1 fw-medium d-md-none progress-phase-mobile">Initializing...</div>
+                    </div>
+
+                    <div class="col-12 col-md-8">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="p-3 rounded-3 h-100 progress-stat-card progress-stat-secondary">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="p-2 rounded-circle me-2 progress-stat-icon progress-stat-icon-secondary">
+                                            <i class="bi bi-speedometer2 progress-stat-icon-small"></i>
+                                        </div>
+                                        <div class="small text-muted fw-medium">Speed</div>
+                                    </div>
+                                    <div id="audioProgressSpeed" class="fw-bold text-secondary">N/A</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-3 h-100 progress-stat-card progress-stat-primary">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="p-2 rounded-circle me-2 progress-stat-icon progress-stat-icon-primary">
+                                            <i class="bi bi-hdd-stack progress-stat-icon-small"></i>
+                                        </div>
+                                        <div class="small text-muted fw-medium">Size</div>
+                                    </div>
+                                    <div id="audioProgressSize" class="fw-bold text-primary">N/A</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-3 h-100"
+                                    style="background: linear-gradient(135deg, rgba(0,191,165,0.1) 0%, rgba(16,114,200,0.05) 100%); border: 1px solid rgba(0,191,165,0.1);">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="p-2 rounded-circle me-2"
+                                            style="background: var(--secondary-color); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-stopwatch" style="font-size: 0.8rem;"></i>
+                                        </div>
+                                        <div class="small text-muted fw-medium">ETA</div>
+                                    </div>
+                                    <div id="audioProgressEta" class="fw-bold" style="color: var(--secondary-color);">N/A</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-3 h-100"
+                                    style="background: linear-gradient(135deg, rgba(16,114,200,0.1) 0%, rgba(0,191,165,0.05) 100%); border: 1px solid rgba(16,114,200,0.1);">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="p-2 rounded-circle me-2"
+                                            style="background: var(--primary-color); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-activity" style="font-size: 0.8rem;"></i>
+                                        </div>
+                                        <div class="small text-muted fw-medium">Status</div>
+                                    </div>
+                                    <div id="audioProgressStatus" class="fw-bold" style="color: var(--primary-color);">Starting</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer border-0 py-3 modal-footer-blur">
+                <button type="button" class="btn btn-outline-danger btn-lg w-100 rounded-pill modal-cancel-btn"
+                    id="cancelAudioDownloadBtn">
+                    <i class="bi bi-x-circle me-2"></i>Cancel Download
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Single Video Progress Modal -->
+<div class="modal fade" id="singleProgressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="singleProgressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-card border-0 shadow-lg overflow-hidden">
+            <div class="modal-header border-0 text-white position-relative py-4"
+                style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);">
+                <h5 class="modal-title fw-bold d-flex align-items-center mb-0" id="singleProgressModalLabel">
+                    <div class="me-3 p-2 rounded-circle" style="background: rgba(255,255,255,0.2);">
+                        <i class="bi bi-download"></i>
+                    </div>
+                    Download Progress
+                </h5>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Modern Progress Circle -->
+                <div class="row align-items-center mb-4">
+                    <div class="col-12 col-md-4 text-center mb-3 mb-md-0">
+                        <div class="position-relative d-inline-block">
+                            <svg width="120" height="120" class="progress-ring" viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="50" stroke="var(--bs-border-color)" stroke-width="6"
+                                    fill="transparent" opacity="0.1" />
+                                <circle id="progressRing" cx="60" cy="60" r="50" stroke="url(#modernGradient)"
+                                    stroke-width="6" fill="transparent" stroke-dasharray="314" stroke-dashoffset="314"
+                                    transform="rotate(-90 60 60)" class="progress-stroke"
+                                    style="transition: stroke-dashoffset 0.3s ease;" />
+                                <defs>
+                                    <linearGradient id="modernGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:var(--primary-color);stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:var(--secondary-color);stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <div id="singleProgressPercent" class="fw-bold text-center"
+                                    style="font-size: 1.5rem; color: var(--primary-color); line-height: 1;">0%</div>
+                            </div>
+                        </div>
+                        <div id="singleProgressPhase" class="text-muted mt-2 fw-medium d-none d-md-block">Initializing...</div>
+                        <div id="singleProgressPhaseMobile" class="text-muted mt-1 fw-medium d-md-none" style="font-size: 0.75rem;">Initializing...</div>
+                    </div>
+
+                    <!-- Modern Stats Grid -->
+                    <div class="col-12 col-md-8">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="p-3 rounded-3 h-100"
+                                    style="background: linear-gradient(135deg, rgba(16,114,200,0.1) 0%, rgba(0,191,165,0.05) 100%); border: 1px solid rgba(16,114,200,0.1);">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="p-2 rounded-circle me-2"
+                                            style="background: var(--primary-color); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-speedometer2" style="font-size: 0.8rem;"></i>
+                                        </div>
+                                        <div class="small text-muted fw-medium">Speed</div>
+                                    </div>
+                                    <div id="singleProgressSpeed" class="fw-bold" style="color: var(--primary-color);">
+                                        N/A</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-3 h-100"
+                                    style="background: linear-gradient(135deg, rgba(0,191,165,0.1) 0%, rgba(16,114,200,0.05) 100%); border: 1px solid rgba(0,191,165,0.1);">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="p-2 rounded-circle me-2"
+                                            style="background: var(--secondary-color); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-hdd-stack" style="font-size: 0.8rem;"></i>
+                                        </div>
+                                        <div class="small text-muted fw-medium">Size</div>
+                                    </div>
+                                    <div id="singleProgressSize" class="fw-bold" style="color: var(--secondary-color);">
+                                        N/A</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-3 h-100"
+                                    style="background: linear-gradient(135deg, rgba(16,114,200,0.1) 0%, rgba(0,191,165,0.05) 100%); border: 1px solid rgba(16,114,200,0.1);">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="p-2 rounded-circle me-2"
+                                            style="background: var(--primary-color); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-stopwatch" style="font-size: 0.8rem;"></i>
+                                        </div>
+                                        <div class="small text-muted fw-medium">ETA</div>
+                                    </div>
+                                    <div id="singleProgressEta" class="fw-bold" style="color: var(--primary-color);">N/A
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-3 h-100"
+                                    style="background: linear-gradient(135deg, rgba(0,191,165,0.1) 0%, rgba(16,114,200,0.05) 100%); border: 1px solid rgba(0,191,165,0.1);">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="p-2 rounded-circle me-2"
+                                            style="background: var(--secondary-color); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-activity" style="font-size: 0.8rem;"></i>
+                                        </div>
+                                        <div class="small text-muted fw-medium">Status</div>
+                                    </div>
+                                    <div id="singleProgressStatus" class="fw-bold"
+                                        style="color: var(--secondary-color);">Starting</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modern Timeline -->
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between align-items-center position-relative">
+                        <div class="position-absolute w-100 rounded-pill"
+                            style="height: 4px; background: var(--bs-border-color); top: 50%; opacity: 0.3;"></div>
+                        <div class="position-absolute rounded-pill" id="timelineProgress"
+                            style="height: 4px; background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%); top: 50%; width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);">
+                        </div>
+
+                        <div class="text-center position-relative">
+                            <div id="stepVideo"
+                                class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm"
+                                style="width: 40px; height: 40px; background: var(--bs-secondary); transition: all 0.3s ease;">
+                                <i class="bi bi-camera-video-fill"></i>
+                            </div>
+                            <div class="small text-muted mt-2 fw-medium">Video</div>
+                        </div>
+
+                        <div class="text-center position-relative d-none" id="stepAudioContainer">
+                            <div id="stepAudio"
+                                class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm"
+                                style="width: 40px; height: 40px; background: var(--bs-secondary); transition: all 0.3s ease;">
+                                <i class="bi bi-music-note-beamed"></i>
+                            </div>
+                            <div class="small text-muted mt-2 fw-medium">Audio</div>
+                        </div>
+
+                        <div class="text-center position-relative d-none" id="stepMergeContainer">
+                            <div id="stepMerge"
+                                class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm"
+                                style="width: 40px; height: 40px; background: var(--bs-secondary); transition: all 0.3s ease;">
+                                <i class="bi bi-layers-fill"></i>
+                            </div>
+                            <div class="small text-muted mt-2 fw-medium">Merge</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 py-3"
+                style="background: rgba(var(--bs-body-bg-rgb), 0.8); backdrop-filter: blur(10px);">
+                <button type="button" class="btn btn-outline-danger btn-lg w-100 rounded-pill"
+                    id="cancelSingleDownloadBtn" style="border-width: 2px; font-weight: 600;">
+                    <i class="bi bi-x-circle me-2"></i>Cancel Download
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Playlist Download Progress Modal -->
+<div class="modal fade" id="progressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="progressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content glass-card border-0 shadow-lg">
+            <div class="modal-header border-0 text-white py-4"
+                style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);">
+                <h5 class="modal-title fw-bold d-flex align-items-center" id="progressModalLabel">
+                    <div class="me-3 p-2 rounded-circle" style="background: rgba(255,255,255,0.2);">
+                        <i class="bi bi-collection-play"></i>
+                    </div>
+                    Playlist Download Progress
+                </h5>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Detailed Progress Stats -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="row g-3">
+                            <div class="col-md-6 col-lg-3">
+                                <div class="p-3 rounded-3 h-100"
+                                    style="background: linear-gradient(135deg, rgba(16,114,200,0.1) 0%, rgba(0,191,165,0.05) 100%); border: 1px solid rgba(16,114,200,0.1);">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="p-2 rounded-circle me-2"
+                                            style="background: var(--primary-color); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-speedometer2" style="font-size: 0.8rem;"></i>
+                                        </div>
+                                        <div class="small text-muted fw-medium">Speed</div>
+                                    </div>
+                                    <div id="playlistSpeed" class="fw-bold" style="color: var(--primary-color);">0 MB/s</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="p-3 rounded-3 h-100"
+                                    style="background: linear-gradient(135deg, rgba(0,191,165,0.1) 0%, rgba(16,114,200,0.05) 100%); border: 1px solid rgba(0,191,165,0.1);">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="p-2 rounded-circle me-2"
+                                            style="background: var(--secondary-color); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-hdd-stack" style="font-size: 0.8rem;"></i>
+                                        </div>
+                                        <div class="small text-muted fw-medium">Size</div>
+                                    </div>
+                                    <div id="playlistSize" class="fw-bold" style="color: var(--secondary-color);">0 MB / 0 MB</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="p-3 rounded-3 h-100"
+                                    style="background: linear-gradient(135deg, rgba(16,114,200,0.1) 0%, rgba(0,191,165,0.05) 100%); border: 1px solid rgba(16,114,200,0.1);">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="p-2 rounded-circle me-2"
+                                            style="background: var(--primary-color); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-stopwatch" style="font-size: 0.8rem;"></i>
+                                        </div>
+                                        <div class="small text-muted fw-medium">ETA</div>
+                                    </div>
+                                    <div id="playlistEta" class="fw-bold" style="color: var(--primary-color);">N/A</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="p-3 rounded-3 h-100"
+                                    style="background: linear-gradient(135deg, rgba(0,191,165,0.1) 0%, rgba(16,114,200,0.05) 100%); border: 1px solid rgba(0,191,165,0.1);">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="p-2 rounded-circle me-2"
+                                            style="background: var(--secondary-color); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-activity" style="font-size: 0.8rem;"></i>
+                                        </div>
+                                        <div class="small text-muted fw-medium">Status</div>
+                                    </div>
+                                    <div id="playlistPhase" class="fw-bold" style="color: var(--secondary-color);">Starting</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Video Info -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="p-4 rounded-3"
+                            style="background: linear-gradient(135deg, rgba(16,114,200,0.05) 0%, rgba(0,191,165,0.05) 100%); border: 1px solid rgba(16,114,200,0.1);">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="p-2 rounded-circle me-3"
+                                    style="background: var(--primary-color); color: white;">
+                                    <i class="bi bi-play-circle"></i>
+                                </div>
+                                <h6 class="mb-0 fw-bold" style="color: var(--primary-color);">Current Video</h6>
+                                <span id="videoCounter" class="badge bg-primary ms-2">0/0</span>
+                            </div>
+                            <p id="currentVideoTitle" class="mb-2 fw-medium">Initializing download...</p>
+                            <p id="progressStatusText" class="mb-0 text-muted">Please wait while we prepare your download.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modern Progress Bar -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold" style="color: var(--primary-color);">Overall Progress</span>
+                        <span id="progressPercentText" class="fw-bold" style="color: var(--secondary-color);">0%</span>
+                    </div>
+                    <div class="progress rounded-pill shadow-sm" role="progressbar"
+                        style="height: 12px; background: rgba(var(--bs-border-color-rgb), 0.1);">
+                        <div id="progressBar"
+                            class="progress-bar progress-bar-striped progress-bar-animated rounded-pill"
+                            style="width: 0%; background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%); transition: width 0.5s ease;">
+                            0%</div>
+                    </div>
+                </div>
+
+                <!-- Progress Log -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="p-2 rounded-circle me-3"
+                                style="background: var(--secondary-color); color: white;">
+                                <i class="bi bi-list-ul"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold" style="color: var(--secondary-color);">Download Log</h6>
+                        </div>
+                        <div id="progressLogContainer" class="p-3 rounded-3 shadow-sm"
+                            style="max-height: 300px; overflow-y: auto; background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(5px);">
+                            <ul id="progressLog" class="list-unstyled mb-0"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 py-3"
+                style="background: rgba(var(--bs-body-bg-rgb), 0.8); backdrop-filter: blur(10px);">
+                <button type="button" class="btn btn-outline-danger btn-lg w-100 w-md-auto px-4 rounded-pill"
+                    id="cancelDownloadBtn" style="border-width: 2px; font-weight: 600;">
+                    <i class="bi bi-x-circle me-2"></i>Cancel Download
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

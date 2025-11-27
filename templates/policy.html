@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+{% block title %}Privacy Policy - AnyviDow{% endblock %}
+{% block content %}
+<div class="card glass-card">
+    <div class="card-body p-lg-5">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle mb-3" style="width: 80px; height: 80px;">
+                <i class="bi bi-shield-check text-primary" style="font-size: 2.5rem;"></i>
+            </div>
+            <h1 class="display-4 fw-bold mb-3">Privacy Policy</h1>
+            <p class="lead text-body-secondary">Your privacy is important to us. Learn how we protect your data.</p>
+            <small class="text-body-secondary">Last updated: January 2025</small>
+        </div>
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+            <section class="mb-5">
+                <h2 class="h3 fw-bold mb-3 d-flex align-items-center">
+                    <i class="bi bi-info-circle text-primary me-2"></i>
+                    Information We Collect
+                </h2>
+                <p class="mb-3">AnyviDow is designed with privacy in mind. We collect minimal information to provide our service:</p>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Video URLs you submit for downloading</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Download preferences and format selections</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Basic usage analytics (anonymous)</li>
+                </ul>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="h3 fw-bold mb-3 d-flex align-items-center">
+                    <i class="bi bi-database text-primary me-2"></i>
+                    How We Use Your Data
+                </h2>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100">
+                            <h5 class="fw-semibold mb-2">Processing Downloads</h5>
+                            <p class="mb-0 small text-body-secondary">URLs are processed temporarily to fetch video information and generate download links.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100">
+                            <h5 class="fw-semibold mb-2">Service Improvement</h5>
+                            <p class="mb-0 small text-body-secondary">Anonymous usage data helps us improve performance and add new features.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="h3 fw-bold mb-3 d-flex align-items-center">
+                    <i class="bi bi-shield-lock text-primary me-2"></i>
+                    Data Protection
+                </h2>
+                <div class="alert alert-info d-flex align-items-start">
+                    <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+                    <div>
+                        <strong>Local Storage:</strong> Your download history is stored locally in your browser and never sent to our servers.
+                    </div>
+                </div>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="bi bi-trash text-danger me-2"></i>Downloaded files are automatically deleted from our servers after download</li>
+                    <li class="mb-2"><i class="bi bi-clock text-warning me-2"></i>Temporary processing data is cleared within 24 hours</li>
+                    <li class="mb-2"><i class="bi bi-lock text-success me-2"></i>All connections are secured with HTTPS encryption</li>
+                </ul>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="h3 fw-bold mb-3 d-flex align-items-center">
+                    <i class="bi bi-share text-primary me-2"></i>
+                    Third-Party Services
+                </h2>
+                <p>AnyviDow uses yt-dlp to process video information. No personal data is shared with video platforms beyond what's necessary to fetch public video metadata.</p>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="h3 fw-bold mb-3 d-flex align-items-center">
+                    <i class="bi bi-person-check text-primary me-2"></i>
+                    Your Rights
+                </h2>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="text-center p-3 border rounded-3">
+                            <i class="bi bi-eye-slash text-primary mb-2" style="font-size: 1.5rem;"></i>
+                            <h6 class="fw-semibold">No Tracking</h6>
+                            <small class="text-body-secondary">We don't track your browsing behavior</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-center p-3 border rounded-3">
+                            <i class="bi bi-trash text-primary mb-2" style="font-size: 1.5rem;"></i>
+                            <h6 class="fw-semibold">Data Deletion</h6>
+                            <small class="text-body-secondary">Clear your browser data anytime</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="h3 fw-bold mb-3 d-flex align-items-center">
+                    <i class="bi bi-envelope text-primary me-2"></i>
+                    Contact Us
+                </h2>
+                <p>If you have questions about this Privacy Policy, please contact us through our <a href="{{ url_for('contact') }}" class="text-decoration-none">contact page</a>.</p>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

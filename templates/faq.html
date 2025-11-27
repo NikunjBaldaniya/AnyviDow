@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+
+{% block title %}FAQ - AnyviDow{% endblock %}
+
+{% block content %}
+<div class="card glass-card">
+  <div class="card-body p-lg-5">
+    <h1 class="display-5 fw-bold mb-4">Frequently Asked Questions</h1>
+    
+    <div class="accordion" id="faqAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#q1">What platforms are supported?</button></h2>
+        <div id="q1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">AnyviDow supports all platforms compatible with the yt-dlp project, which includes hundreds of websites like YouTube, Instagram, Facebook, X (Twitter), Dailymotion, Bilibili, and many more. If a video is publicly accessible, there's a good chance we can download it.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q2">Is downloading videos legal?</button></h2>
+        <div id="q2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">The legality depends on the content and your local laws. It is generally legal to download content for personal, non-commercial use (like offline viewing) or under "fair use" provisions for commentary, research, or education. However, downloading and redistributing copyrighted material without permission is illegal. Please respect the intellectual property of creators.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q3">Why do some downloads say "video only"?</button></h2>
+        <div id="q3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">To provide the highest quality (like 1080p and 4K), platforms often serve video and audio as separate streams. When you select a "video only" format, our backend automatically finds the best available audio, downloads both files, and merges them into a single, high-quality video file for you. This ensures you get the best possible result.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q4">Where is my download history stored?</button></h2>
+        <div id="q4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">Your privacy is our priority. Your download history is stored exclusively in your browser's local storage on your device. It is never sent to or stored on our servers, giving you complete control over your data.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q5">What video formats can I download?</button></h2>
+        <div id="q5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">AnyviDow supports multiple formats including MP4, WebM, and various audio formats like MP3, M4A, and OGG. You can choose from different quality options ranging from 144p to 4K (when available), and select between video-only, audio-only, or combined formats.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q6">Can I download entire playlists?</button></h2>
+        <div id="q6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">Yes! AnyviDow can download entire playlists from supported platforms. You can choose to download all videos, select a range (like top 5 or videos 10-20), or pick a specific quality. All playlist videos are packaged into a convenient ZIP file for easy download.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q7">Is there a file size limit?</button></h2>
+        <div id="q7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">There are no artificial file size limits imposed by AnyviDow. However, very large files (like 4K videos or long playlists) may take longer to process and download. Your download speed will depend on your internet connection and the source server's capacity.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q8">Why is my download taking so long?</button></h2>
+        <div id="q8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">Download speed depends on several factors: your internet connection, the source server's speed, video quality/size, and server load. High-quality videos (1080p+) and playlists naturally take longer. The progress indicator shows real-time speed and estimated completion time.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q9">Can I cancel a download in progress?</button></h2>
+        <div id="q9" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">Yes, you can cancel any download at any time by clicking the "Cancel Download" button in the progress modal. This will immediately stop the download process and clean up any temporary files on our servers.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q10">Do you store my downloaded videos?</button></h2>
+        <div id="q10" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">No, we do not store your videos. All downloaded files are automatically deleted from our servers immediately after you download them. We only temporarily process the files during the download operation to ensure your privacy and save server space.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q11">What if a video fails to download?</button></h2>
+        <div id="q11" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">If a download fails, try these steps: 1) Check if the video URL is correct and accessible, 2) Try a different quality/format, 3) Ensure the video isn't private or geo-restricted, 4) Wait a few minutes and try again. Some platforms may temporarily block automated access.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q12">Is AnyviDow free to use?</button></h2>
+        <div id="q12" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">Yes, AnyviDow is completely free to use! There are no hidden fees, subscription costs, or download limits. We believe in providing a simple, accessible tool for everyone to download videos for personal use.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
